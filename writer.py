@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 # coding: utf-8
 
-import math, os, time, sys, getope
+import math, os, time, sys, getopt
 from ev3dev.ev3 import *
 
 from svg.parser import parse_path

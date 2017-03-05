@@ -470,7 +470,7 @@ class Writer():
                     self.mot_B.stop()
 
 
-def main():
+def main(argv):
     inputfile = ''
     try:
         opts, args = getopt.getopt(argv,"hi:o:",["ifile=","ofile="])

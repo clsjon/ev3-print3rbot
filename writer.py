@@ -126,7 +126,7 @@ class Writer():
                 stop_B = True
             if (stop_B and stop_A):
                 break
-            if (time.time() - start > 10):
+            if (time.time() - start > 30):
                 self.mot_A.stop()
                 self.mot_B.stop()
                 break
@@ -473,7 +473,7 @@ class Writer():
 def main():
     wri = Writer(calibrate = True)
     wri.pen_up()
-    wri.draw_image(image_file = 'images/test.svg',max_speed=35)
+    #wri.draw_image(image_file = 'images/test.svg',max_speed=35)
     #wri.follow_mouse()
     wri.pen_up()
 

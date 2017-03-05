@@ -334,9 +334,9 @@ class Writer():
         
         def svg_point_to_coord (svg_point):
             scale = 10.
-            ciblex = svg_point.real/scale
-            cibley = (272.74-svg_point.imag)/scale
-            return (ciblex, cibley)
+            targetx = svg_point.real/scale
+            targety = (272.74-svg_point.imag)/scale
+            return (targetx, targety)
         def feq(a,b):
             if abs(a-b)<0.0001:
                 return 1
@@ -451,9 +451,9 @@ class Writer():
                 #self.pen_up()
                 if (dev.buttons["BTN_RIGHT"]):
                     x,y = dev.axes["REL_X"]/100., dev.axes["REL_Y"]/100.
-                    ciblex = startx-x
-                    cibley = starty+y
-                    print ((ciblex, cibley))
+                    targetx = startx-x
+                    targety = starty+y
+                    print ((targetx, targety))
             if ("BTN_LEFT" in dev.buttons.keys()):
                 if (pen_up and dev.buttons["BTN_LEFT"]):
                     pen_up = False
@@ -463,9 +463,9 @@ class Writer():
                     self.pen_up()
             if ("REL_X" in dev.axes.keys()) and ("REL_Y" in dev.axes.keys()):
                 x,y = dev.axes["REL_X"]/100., dev.axes["REL_Y"]/100.
-                ciblex = startx-x
-                cibley = starty+y
-                if (not self.set_speed_to_coordinates (ciblex,cibley,brake=1.,max_speed = 100)):
+                targetx = startx-x
+                targety = starty+y
+                if (not self.set_speed_to_coordinates (targetx,targety,brake=1.,max_speed = 100)):
                     self.mot_A.stop()
                     self.mot_B.stop()
 

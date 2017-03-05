@@ -478,7 +478,7 @@ def main():
           print ('writer.py -i <inputfile>')
           sys.exit(2)
     for opt, arg in opts:
-        if opt='-h':
+        if opt == '-h':
             print ('writer.py -i <inputfile>')
             sys.exit()
         elif opt in ("-i", "--ifile"):

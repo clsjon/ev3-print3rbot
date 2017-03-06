@@ -472,22 +472,11 @@ class Writer():
 
 
 def main(argv):
-    inputfile = ''
-    try:
-        opts, args = getopt.getopt(argv,"hi:o:",["ifile=","ofile="])
-    except getopt.GetoptError:
-          print ('writer.py -i <inputfile>')
-          sys.exit(2)
-    for opt, arg in opts:
-        if opt == '-h':
-            print ('writer.py -i <inputfile>')
-            sys.exit()
-        elif opt in ("-i", "--ifile"):
-                 inputfile = arg
-        
-    wri = Writer(calibrate = True)
+        wri = Writer(calibrate = True)
     wri.pen_up()
-    wri.draw_image(image_file = inputfile,max_speed=35)
+    path = [1,(1,3),(3,3)]
+    wri.follow_path (wri,path)
+    #wri.draw_image(image_file = inputfile,max_speed=35)
     #wri.follow_mouse()
     wri.pen_up()
 

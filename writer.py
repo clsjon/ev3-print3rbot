@@ -2,7 +2,11 @@
 # coding: utf-8
 
 import math, os, time, sys, getopt
-from ev3dev.ev3 import *
+
+#rpyc
+import rpyc
+
+#from ev3dev.ev3 import *
 
 from svg.parser import parse_path
 from svg.path import Line
@@ -66,13 +70,18 @@ class mymotor(Motor):
 class Writer():
     
     def __init__(self, calibrate=True):
-        self.mot_A    = mymotor(OUTPUT_C)
-        self.mot_B    = mymotor(OUTPUT_A)
         
-        self.mot_lift = mymotor(OUTPUT_B)
+        #RPYC stuff
+        conn = rpyc.classic.connect('192.168.3.2')
+        ev3 = conn.modules['ev3dev.ev3']
         
-        self.touch_A  = TouchSensor(INPUT_3)
-        self.touch_B  = TouchSensor(INPUT_2)
+        self.mot_A    = mymotor(ev3.OUTPUT_C)
+        self.mot_B    = mymotor(ev3.OUTPUT_A)
+        
+        self.mot_lift = mymotor(ev3.OUTPUT_B)
+        
+        self.touch_A  = ev3.TouchSensor(ev3.INPUT_3)
+        self.touch_B  = ev3.TouchSensor(ev3.INPUT_2)
         
         if (calibrate):
             self.calibrate()
@@ -665,13 +674,13 @@ class TicTacToe():
 
 
 def main(argv):
-    #wri = Writer(calibrate = True)
-    #wri.pen_up()
-    #path = [0,(-4,18),1,(-4,23),0,(0,18),1,(0,23),0,(2,18),1,(2,23)]
-    #wri.follow_path (path, max_speed=35)
+    wri = Writer(calibrate = True)
+    wri.pen_up()
+    path = [0,(-4,18),1,(-4,23),0,(0,18),1,(0,23),0,(2,18),1,(2,23)]
+    wri.follow_path (path, max_speed=35)
     #wri.draw_image(image_file = 'images/test.svg',max_speed=35)
     #wri.follow_mouse()
-    #wri.pen_up()
+    wri.pen_up()
 
 
 

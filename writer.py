@@ -472,7 +472,7 @@ class Writer():
 
 
 def main(argv):
-        wri = Writer(calibrate = True)
+    wri = Writer(calibrate = True)
     wri.pen_up()
     path = [1,(1,3),(3,3)]
     wri.follow_path (wri,path)

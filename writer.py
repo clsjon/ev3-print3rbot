@@ -480,7 +480,7 @@ def main(argv):
     wri.pen_up()
     #path = [1,(1,3),(3,3)]
     #wri.follow_path (path, 35)
-    wri.draw_image(image_file = inputfile,max_speed=35)
+    wri.draw_image(image_file = 'images/test.svg',max_speed=35)
     #wri.follow_mouse()
     wri.pen_up()
 

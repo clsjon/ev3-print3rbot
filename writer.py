@@ -475,7 +475,7 @@ def main(argv):
     wri = Writer(calibrate = True)
     wri.pen_up()
     path = [1,(1,3),(3,3)]
-    wri.follow_path (wri,path)
+    wri.follow_path (path, 35)
     #wri.draw_image(image_file = inputfile,max_speed=35)
     #wri.follow_mouse()
     wri.pen_up()

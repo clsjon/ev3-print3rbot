@@ -433,7 +433,7 @@ class Writer():
     
     def draw_image (self, image_file = 'images/drawing.svg', max_speed=70.):
         list_points = self.fit_path (self.read_svg (image_file))
-        print list_point
+        print (list_points)
         #self.follow_path(list_points, max_speed=max_speed)
     
     def follow_mouse (self, path="/dev/input/by-id/usb-0461_USB_Optical_Mouse-event-mouse"):

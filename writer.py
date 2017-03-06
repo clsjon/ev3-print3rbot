@@ -6,6 +6,10 @@ import math, os, time, sys, getopt
 #rpyc
 import rpyc
 
+        #RPYC stuff
+conn = rpyc.classic.connect('192.168.3.2')
+ev3 = conn.modules['ev3dev.ev3']
+   
 #from ev3dev.ev3 import *
 
 from svg.parser import parse_path

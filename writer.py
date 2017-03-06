@@ -478,7 +478,7 @@ class Writer():
 def main(argv):
     wri = Writer(calibrate = True)
     wri.pen_up()
-    path = [0,(0,11),1,(0,14)]
+    path = [0,(6,11),1,(6,14)]
     wri.follow_path (path, 35)
     #wri.draw_image(image_file = 'images/test.svg',max_speed=35)
     #wri.follow_mouse()

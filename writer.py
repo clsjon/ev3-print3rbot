@@ -479,6 +479,9 @@ class Writer():
                     self.mot_A.stop()
                     self.mot_B.stop()
     
+    def speak(self, sentence):
+        Sound.speak(sentence)
+    
     
         
 
@@ -512,7 +515,7 @@ class TicTacToe():
     def makeMove(self, board, letter, move):
         board[move] = letter
         if letter == self.computerLetter:
-            drawMove(move)
+            self.drawMove(move)
         
         
     def isWinner(self, board, letter):
@@ -599,7 +602,7 @@ class TicTacToe():
         boardPath = [0, (-2,15), 1, (-2,24), 0, (1,15), 1, (1,24), 0, (-5,21), 1, (4,21), 0, (-5,18), 1, (4,18)]
         self.wri.follow_path(boardPath)
         
-    def drawMove(self, move)
+    def drawMove(self, move):
         squareX = ((move - 1) % 3) * 3
         squareY = ((move-1)//3) * 3
         offsetX = wri.origin[0] + squareX
@@ -609,6 +612,9 @@ class TicTacToe():
         line2End = (2+offsetX, 1+offsetY)
         path = [0, line1Start, 1, line1End, 0, line2Start, 1, line2End]
         wri.follow_path(path)
+
+    def speak(self, sentence):
+        self.wri.speak(sentence)
 
 def inputPlayerLetter():
     # Lets the player type which letter they want to be.
@@ -620,27 +626,25 @@ def inputPlayerLetter():
 
     # the first element in the list is the player's letter, the second is the computer's letter.
     return letter
-
+    
 
 def main(argv):
     ttt = TicTacToe('O')
-    ttt.drawBoard()
+#    ttt.drawBoard()
    
     while True:
         # Reset the board
         turn = ttt.whoGoesFirst()
-        print('The ' + turn + ' will go first.')
+        ttt.speak('The ' + turn + ' will go first.')
         gameIsPlaying = True
     
         while gameIsPlaying:
             if turn == 'player':
                 # Player's turn.
-                ttt.drawBoard()
                 move = ttt.getPlayerMove()
                 ttt.makeMove(ttt.theBoard, ttt.playerLetter, move)
             
                 if ttt.isWinner(ttt.theBoard, ttt.playerLetter):
-                    ttt.drawBoard(ttt.theBoard)
                     print('Hooray! You have won the game you silly banana!')
                     gameIsPlaying = False
                 else:
@@ -657,7 +661,6 @@ def main(argv):
                 ttt.makeMove(ttt.theBoard, ttt.computerLetter, move)
             
                 if ttt.isWinner(ttt.theBoard, ttt.computerLetter):
-                    ttt.drawBoard()
                     print('The computer has beaten you! You lose.')
                     gameIsPlaying = False
                 else:

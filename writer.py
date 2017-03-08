@@ -68,6 +68,9 @@ class Writer():
     
     def __init__(self, calibrate=True):
         
+        #ttt board parameters
+        self.origin = (-5,15)
+        
         self.mot_A    = mymotor(OUTPUT_C)
         self.mot_B    = mymotor(OUTPUT_A)
         
@@ -295,7 +298,7 @@ class Writer():
             self.mot_B.stop(stop_command='brake')
             self.mot_A.stop(stop_command='brake')
     
-    def follow_path (self, list_points, max_speed=70):
+    def follow_path (self, list_points, max_speed=35):
         pen_change = False
         lastx = lasty = None
         while (len(list_points)>0):
@@ -475,6 +478,9 @@ class Writer():
                 if (not self.set_speed_to_coordinates (targetx,targety,brake=1.,max_speed = 100)):
                     self.mot_A.stop()
                     self.mot_B.stop()
+    
+    
+        
 
 class TicTacToe():
     # Tic Tac Toe
@@ -488,11 +494,8 @@ class TicTacToe():
         
         #parameters for drawing board
         board_size = 9
-        center = (0,20)
-        
+         
  
-    def drawBoard(self):
-
 
     def whoGoesFirst(self):
         # Randomly choose the player who goes first.
@@ -508,6 +511,9 @@ class TicTacToe():
 
     def makeMove(self, board, letter, move):
         board[move] = letter
+        if letter == self.computerLetter:
+            drawMove(move)
+        
         
     def isWinner(self, board, letter):
         # Given a board and a player's letter, this function returns True if that player has won.
@@ -589,9 +595,20 @@ class TicTacToe():
                 return False
         return True
         
-    def drawBoard(self)
+    def drawBoard(self):
+        boardPath = [0, (-2,15), 1, (-2,24), 0, (1,15), 1, (1,24), 0, (-5,21), 1, (4,21), 0, (-5,18), 1, (4,18)]
+        self.wri.follow_path(boardPath)
         
-
+    def drawMove(self, move)
+        squareX = ((move - 1) % 3) * 3
+        squareY = ((move-1)//3) * 3
+        offsetX = wri.origin[0] + squareX
+        line1Start = (1+offsetX, 1+offsetY)
+        line1End = (2+offsetX, 2+offsetY)
+        line2Start = (1+offsetX, 2+offsetY)
+        line2End = (2+offsetX, 1+offsetY)
+        path = [0, line1Start, 1, line1End, 0, line2Start, 1, line2End]
+        wri.follow_path(path)
 
 def inputPlayerLetter():
     # Lets the player type which letter they want to be.
@@ -606,10 +623,59 @@ def inputPlayerLetter():
 
 
 def main(argv):
-    ttt = TicTacToe('X')
+    ttt = TicTacToe('O')
+    ttt.drawBoard()
+   
+    while True:
+        # Reset the board
+        turn = ttt.whoGoesFirst()
+        print('The ' + turn + ' will go first.')
+        gameIsPlaying = True
+    
+        while gameIsPlaying:
+            if turn == 'player':
+                # Player's turn.
+                ttt.drawBoard()
+                move = ttt.getPlayerMove()
+                ttt.makeMove(ttt.theBoard, ttt.playerLetter, move)
+            
+                if ttt.isWinner(ttt.theBoard, ttt.playerLetter):
+                    ttt.drawBoard(ttt.theBoard)
+                    print('Hooray! You have won the game you silly banana!')
+                    gameIsPlaying = False
+                else:
+                    if ttt.isBoardFull():
+                        ttt.drawBoard()
+                        print('The game is a tie!')
+                        break
+                    else:
+                        turn = 'computer'
+        
+            else:
+                # Computer's turn.
+                move = ttt.getComputerMove()
+                ttt.makeMove(ttt.theBoard, ttt.computerLetter, move)
+            
+                if ttt.isWinner(ttt.theBoard, ttt.computerLetter):
+                    ttt.drawBoard()
+                    print('The computer has beaten you! You lose.')
+                    gameIsPlaying = False
+                else:
+                    if ttt.isBoardFull():
+                        ttt.drawBoard()
+                        print('The game is a tie!')
+                        break
+                    else:
+                        turn = 'player'
+    
+        if ttt.playAgain():
+            ttt = TicTacToe(inputPlayerLetter())
+        else:
+            break
+
     
     #path = [0,(-4,18),1,(-4,23),0,(0,18),1,(0,23),0,(2,18),1,(2,23)]
-    wri.follow_path (path, max_speed=35)
+    #wri.follow_path (path, max_speed=35)
     #wri.draw_image(image_file = 'images/test.svg',max_speed=35)
     #wri.follow_mouse()
     wri.pen_up()

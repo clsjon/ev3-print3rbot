@@ -514,8 +514,6 @@ class TicTacToe():
 
     def makeMove(self, board, letter, move):
         board[move] = letter
-        if letter == self.computerLetter:
-            self.drawMove(move)
         
         
     def isWinner(self, board, letter):
@@ -605,13 +603,15 @@ class TicTacToe():
     def drawMove(self, move):
         squareX = ((move - 1) % 3) * 3
         squareY = ((move-1)//3) * 3
-        offsetX = wri.origin[0] + squareX
+        offsetX = self.wri.origin[0] + squareX
+        offsetY = self.wri.origin[1] + squareY
         line1Start = (1+offsetX, 1+offsetY)
         line1End = (2+offsetX, 2+offsetY)
         line2Start = (1+offsetX, 2+offsetY)
         line2End = (2+offsetX, 1+offsetY)
-        path = [0, line1Start, 1, line1End, 0, line2Start, 1, line2End]
-        wri.follow_path(path)
+        print (line1Start)
+        path = [0, line1Start, 1, line1End, 0, line2Start, 1, line2End, 0]
+        self.wri.follow_path(path)
 
     def speak(self, sentence):
         self.wri.speak(sentence)
@@ -630,11 +630,11 @@ def inputPlayerLetter():
 
 def main(argv):
     ttt = TicTacToe('O')
-#    ttt.drawBoard()
+    ttt.drawBoard()
    
     while True:
         # Reset the board
-        turn = ttt.whoGoesFirst()
+        turn = 'computer' #ttt.whoGoesFirst()
         ttt.speak('The ' + turn + ' will go first.')
         gameIsPlaying = True
     
@@ -659,7 +659,8 @@ def main(argv):
                 # Computer's turn.
                 move = ttt.getComputerMove()
                 ttt.makeMove(ttt.theBoard, ttt.computerLetter, move)
-            
+                ttt.speak ('The computer moves on square ' + str(move))
+                ttt.drawMove(move)
                 if ttt.isWinner(ttt.theBoard, ttt.computerLetter):
                     print('The computer has beaten you! You lose.')
                     gameIsPlaying = False

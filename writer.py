@@ -69,7 +69,7 @@ class Writer():
     def __init__(self, calibrate=True):
         
         #ttt board parameters
-        self.origin = (-5,15)
+        self.origin = Point(-5,18)
         
         self.mot_A    = mymotor(OUTPUT_C)
         self.mot_B    = mymotor(OUTPUT_A)
@@ -78,6 +78,8 @@ class Writer():
         
         self.touch_A  = TouchSensor(INPUT_3)
         self.touch_B  = TouchSensor(INPUT_2)
+        
+        self.color = ColorSensor(INPUT_1)
         
         if (calibrate):
             self.calibrate()
@@ -283,7 +285,7 @@ class Writer():
         self.mot_A.rotate_forever((math.copysign(speedA, distA)), regulate='off')
         return 1
     
-    def goto_point (self, x,y, brake=1., last_x=None, last_y=None, max_speed=70.):
+    def goto_point (self, x,y, brake=1., last_x=None, last_y=None, max_speed=35.):
         if (last_x == None or last_y == None):
             initposB, initposA = self.mot_B.position, self.mot_A.position
             initx, inity = Writer.motorpos_to_coordinates (initposB, initposA)
@@ -305,7 +307,7 @@ class Writer():
             if type(list_points[0]) is int:
                 pen_change = True
                 pen = int(list_points.pop(0))
-                time.sleep(0.1)
+                time.sleep(0.05)
                 if pen:
                     self.pen_down()
                 else:
@@ -379,7 +381,7 @@ class Writer():
                 actual = end
         list_points.append(0)
         return list_points
-
+    
     
     def fit_path (self, points):
         def get_bounding_box (points):
@@ -434,7 +436,7 @@ class Writer():
             else:
                 new_points.append(((point[0]-bbox_x)*best_scale + best_fit_x,(point[1]-bbox_y)*best_scale + best_fit_y))
         return new_points
-
+    
     
     def draw_image (self, image_file = 'images/drawing.svg', max_speed=70.):
         list_points = self.fit_path (self.read_svg (image_file))
@@ -480,10 +482,10 @@ class Writer():
                     self.mot_B.stop()
     
     def speak(self, sentence):
-        Sound.speak(sentence)
-    
+        Sound.speak(sentence).wait()
     
         
+
 
 class TicTacToe():
     # Tic Tac Toe
@@ -497,25 +499,25 @@ class TicTacToe():
         
         #parameters for drawing board
         board_size = 9
-         
  
 
+    
     def whoGoesFirst(self):
         # Randomly choose the player who goes first.
         if random.randint(0, 1) == 0:
             return 'computer'
         else:
             return 'player'
-
+    
     def playAgain(self):
         # This function returns True if the player wants to play again, otherwise it returns False.
         print('Do you want to play again? (yes or no)')
         return input().lower().startswith('y')
-
+    
     def makeMove(self, board, letter, move):
         board[move] = letter
         
-        
+    
     def isWinner(self, board, letter):
         # Given a board and a player's letter, this function returns True if that player has won.
         # We use bo instead of board and le instead of letter so we don't have to type as much.
@@ -528,23 +530,39 @@ class TicTacToe():
         (board[9] == letter and board[6] == letter and board[3] == letter) or # down the right side
         (board[7] == letter and board[5] == letter and board[3] == letter) or # diagonal
         (board[9] == letter and board[5] == letter and board[1] == letter)) # diagonal
-
+    
     def getBoardCopy(self):
         # Make a duplicate of the board list and return it the duplicate.
         return self.theBoard[:]
-        
+    
     def isSpaceFree(self, board, move):
         # Return true if the passed move is free on the passed board.
         return board[move] == ' '
-
+    
     def getPlayerMove(self):
-        # Let the player type in their move.
-        move = ' '
-        while move not in '1 2 3 4 5 6 7 8 9'.split() or not self.isSpaceFree(self.theBoard, int(move)):
-            print('What is your next move? (1-9)')
-            move = input()
-        return int(move)
-
+        sensorPoints = [Point(-2.7,15.6), Point(1,17), Point(3.5,16.6), Point(-1.4,20.2), Point(1.2,20), Point(4,19.6), Point(-1.2,23.3), Point(1.8,23), Point(4.3,22.5)]
+        move = 0
+        
+        for i in range(0,9):
+            self.wri.goto_point(sensorPoints[i].x,sensorPoints[i].y)
+            print ('Color value for square ' + str(i+1) + ' is ' + str(self.wri.color.value()))
+            if (self.wri.color.value() < 60):
+                
+        # while True:
+#             print ('coord')
+#             coord = input()
+#             mx,my = coord.split(',')
+#             self.wri.goto_point (float(mx),float(my))
+#             print ('Color value: ' + str(self.wri.color.value()))
+#
+        
+        # move = ' '
+#         self.wri.goto_point (0,15)
+#         while move not in '1 2 3 4 5 6 7 8 9'.split() or not self.isSpaceFree(self.theBoard, int(move)):
+#             print('What is your next move? (1-9)')
+#             move = input()
+#         return int(move)
+#
     def chooseRandomMoveFromList(self, movesList):
         # Returns a valid move from the passed list on the passed board.
         # Returns None if there is no valid move.
@@ -552,12 +570,12 @@ class TicTacToe():
         for i in movesList:
             if self.isSpaceFree(self.theBoard,i):
                 possibleMoves.append(i)
-    
+        
         if len(possibleMoves) != 0:
             return random.choice(possibleMoves)
         else:
             return None
-
+    
     def getComputerMove(self):
         # Given a board and the computer's letter, determine where to move and return that move.
         # Here is our algorithm for our Tic Tac Toe AI:
@@ -568,7 +586,7 @@ class TicTacToe():
                 self.makeMove(copy, self.computerLetter, i)
                 if self.isWinner(copy, self.computerLetter):
                     return i
-    
+        
         # Check if the player could win on their next move, and block them.
         for i in range(1, 10):
             copy = self.getBoardCopy()
@@ -576,45 +594,84 @@ class TicTacToe():
                 self.makeMove(copy, self.playerLetter, i)
                 if self.isWinner(copy, self.playerLetter):
                     return i
-    
+        
         # Try to take one of the corners, if they are free.
         move = self.chooseRandomMoveFromList([1, 3, 7, 9])
         if move != None:
             return move
-    
+        
         # Try to take the center, if it is free.
         if isSpaceFree(board, 5):
             return 5
-    
+        
         # Move on one of the sides.
         return chooseRandomMoveFromList([2, 4, 6, 8])
-
+    
     def isBoardFull(self):
         # Return True if every space on the board has been taken. Otherwise return False.
         for i in range(1, 10):
             if self.isSpaceFree(self.theBoard, i):
                 return False
         return True
-        
+    
     def drawBoard(self):
-        boardPath = [0, (-2,15), 1, (-2,24), 0, (1,15), 1, (1,24), 0, (-5,21), 1, (4,21), 0, (-5,18), 1, (4,18)]
-        self.wri.follow_path(boardPath)
+        line1 = Line(Point(3,0)+self.wri.origin,Point(3,9)+self.wri.origin)
+        line2 = Line(Point(6,0)+self.wri.origin,Point(6,9)+self.wri.origin)
+        line3 = Line(Point(0,6)+self.wri.origin,Point(9,6)+self.wri.origin)
+        line4 = Line(Point(0,3)+self.wri.origin,Point(9,3)+self.wri.origin)
         
-    def drawMove(self, move):
-        squareX = ((move - 1) % 3) * 3
-        squareY = ((move-1)//3) * 3
-        offsetX = self.wri.origin[0] + squareX
-        offsetY = self.wri.origin[1] + squareY
-        line1Start = (1+offsetX, 1+offsetY)
-        line1End = (2+offsetX, 2+offsetY)
-        line2Start = (1+offsetX, 2+offsetY)
-        line2End = (2+offsetX, 1+offsetY)
-        print (line1Start)
-        path = [0, line1Start, 1, line1End, 0, line2Start, 1, line2End, 0]
-        self.wri.follow_path(path)
-
+        path = line1.wriPath()+line2.wriPath()+line3.wriPath()+line4.wriPath()+[0]
+        print (path)
+        self.wri.follow_path(line1.wriPath()+line2.wriPath()+line3.wriPath()+line4.wriPath()+[0])
+        self.wri.pen_up()
+        
+    def drawComputerMove(self, move):
+        squareOrigin = Point(((move - 1) % 3) * 3, ((move-1)//3) * 3) + self.wri.origin
+        # offsetY = self.wri.origin[1] + squareY
+        markSize = 1.4
+        line1 = Line(Point(1.5-markSize/2,1.5-markSize/2)+squareOrigin,Point(1.5+markSize/2,1.5+markSize/2)+squareOrigin)
+        line2 = Line(Point(1.5-markSize/2,1.5+markSize/2)+squareOrigin,Point(1.5+markSize/2,1.5-markSize/2)+squareOrigin)
+        # line1End = (2.2+offsetX, 2.2+offsetY)
+        # line2Start = (1+offsetX, 2+offsetY)
+        # line2End = (2+offsetX, 1+offsetY)
+        # print (line1Start)
+        # path = [0, line1Start, 1, line1End, 0, line2Start, 1, line2End, 0]
+        self.wri.follow_path(line1.wriPath()+line2.wriPath())
+    
     def speak(self, sentence):
         self.wri.speak(sentence)
+
+class Point:
+    def __init__(self, x, y):
+        self.x, self.y = x, y
+  
+    def __str__(self):
+        return "{}, {}".format(self.x, self.y)
+  
+    def __neg__(self):
+        return Point(-self.x, -self.y)
+  
+    def __add__(self, point):
+        return Point(self.x+point.x, self.y+point.y)
+  
+    def __sub__(self, point):
+        return self + -point
+        
+    def tuple(self):
+        return (self.x,self.y)
+    
+    
+
+class Line:
+    def __init__(self,start,end):
+        self.start, self.end = start, end
+    
+    def __str__(self):
+        return str(self.start) + '-' + str(self.end)
+    
+    def wriPath(self):
+        return [0, self.start.tuple(), 1, self.end.tuple()]
+    
 
 def inputPlayerLetter():
     # Lets the player type which letter they want to be.
@@ -623,60 +680,58 @@ def inputPlayerLetter():
     while not (letter == 'X' or letter == 'O'):
         print('Do you want to be X or O?')
         letter = input().upper()
-
+    
     # the first element in the list is the player's letter, the second is the computer's letter.
     return letter
-    
+
 
 def main(argv):
     ttt = TicTacToe('O')
     ttt.drawBoard()
-   
+    
     while True:
         # Reset the board
-        turn = 'computer' #ttt.whoGoesFirst()
-        ttt.speak('The ' + turn + ' will go first.')
+        turn = 'player' #ttt.whoGoesFirst()
+        #ttt.speak('The ' + turn + ' will go first.')
         gameIsPlaying = True
-    
+        
         while gameIsPlaying:
             if turn == 'player':
                 # Player's turn.
                 move = ttt.getPlayerMove()
                 ttt.makeMove(ttt.theBoard, ttt.playerLetter, move)
-            
+                
                 if ttt.isWinner(ttt.theBoard, ttt.playerLetter):
-                    print('Hooray! You have won the game you silly banana!')
+                    ttt.speak('Hooray! You have won the game you silly banana!')
                     gameIsPlaying = False
                 else:
                     if ttt.isBoardFull():
-                        ttt.drawBoard()
-                        print('The game is a tie!')
+                        ttt.speak('The game is a tie!')
                         break
                     else:
                         turn = 'computer'
-        
+            
             else:
                 # Computer's turn.
                 move = ttt.getComputerMove()
                 ttt.makeMove(ttt.theBoard, ttt.computerLetter, move)
                 ttt.speak ('The computer moves on square ' + str(move))
-                ttt.drawMove(move)
+                ttt.drawComputerMove(move)
                 if ttt.isWinner(ttt.theBoard, ttt.computerLetter):
                     print('The computer has beaten you! You lose.')
                     gameIsPlaying = False
                 else:
                     if ttt.isBoardFull():
-                        ttt.drawBoard()
                         print('The game is a tie!')
                         break
                     else:
                         turn = 'player'
-    
+        
         if ttt.playAgain():
             ttt = TicTacToe(inputPlayerLetter())
         else:
             break
-
+    
     
     #path = [0,(-4,18),1,(-4,23),0,(0,18),1,(0,23),0,(2,18),1,(2,23)]
     #wri.follow_path (path, max_speed=35)

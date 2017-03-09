@@ -518,7 +518,12 @@ class TicTacToe():
     
     def getPlayerMove(self):
         sensorPoints = [Point(-2.7,15.6), Point(1,17), Point(3.5,16.6), Point(-1.4,20.2), Point(1.2,20), Point(4,19.6), Point(-1.2,23.3), Point(1.8,23), Point(4.3,22.5)]
-        move = 0
+
+        #Move out of the way to allow player entry
+        self.wri.goto_point(4,14)
+        time.sleep(3)
+        #
+
         print (self.theBoard)
         for i in self.emptySpaces(self.theBoard):
             self.wri.goto_point(sensorPoints[i-1].x,sensorPoints[i-1].y)
@@ -712,11 +717,7 @@ def main(argv):
             break
     
     
-    #path = [0,(-4,18),1,(-4,23),0,(0,18),1,(0,23),0,(2,18),1,(2,23)]
-    #wri.follow_path (path, max_speed=35)
-    #wri.draw_image(image_file = 'images/test.svg',max_speed=35)
-    #wri.follow_mouse()
-    wri.pen_up()
+
 
 
 

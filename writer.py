@@ -447,40 +447,7 @@ class Writer():
         f.close ()
         #self.follow_path(list_points, max_speed=max_speed)
     
-    def follow_mouse (self, path="/dev/input/by-id/usb-0461_USB_Optical_Mouse-event-mouse"):
-        if not os.path.exists(path):
-            return
-        posB, posA = self.mot_B.position, self.mot_A.position
-        startx, starty = Writer.motorpos_to_coordinates (posB, posA)
-        self.pen_up()
-        pen_up = True
-        import evdev
-        dev = evdev.Device(path)
-        while 1:
-            dev.poll()
-            time.sleep(0.005)
-            if ("BTN_RIGHT" in dev.buttons.keys()):
-                #self.pen_up()
-                if (dev.buttons["BTN_RIGHT"]):
-                    x,y = dev.axes["REL_X"]/100., dev.axes["REL_Y"]/100.
-                    targetx = startx-x
-                    targety = starty+y
-                    print ((targetx, targety))
-            if ("BTN_LEFT" in dev.buttons.keys()):
-                if (pen_up and dev.buttons["BTN_LEFT"]):
-                    pen_up = False
-                    self.pen_down()
-                elif (not pen_up and not dev.buttons["BTN_LEFT"]):
-                    pen_up = True
-                    self.pen_up()
-            if ("REL_X" in dev.axes.keys()) and ("REL_Y" in dev.axes.keys()):
-                x,y = dev.axes["REL_X"]/100., dev.axes["REL_Y"]/100.
-                targetx = startx-x
-                targety = starty+y
-                if (not self.set_speed_to_coordinates (targetx,targety,brake=1.,max_speed = 100)):
-                    self.mot_A.stop()
-                    self.mot_B.stop()
-    
+   
     def speak(self, sentence):
         Sound.speak(sentence).wait()
     
@@ -538,15 +505,26 @@ class TicTacToe():
     def isSpaceFree(self, board, move):
         # Return true if the passed move is free on the passed board.
         return board[move] == ' '
+        
+    def emptySpaces(self,board):
+        spaces = []
+        for i in range(1,10):
+            if board[i] == ' ':
+                spaces.append(i)
+            
+        return spaces
+            
+            
     
     def getPlayerMove(self):
         sensorPoints = [Point(-2.7,15.6), Point(1,17), Point(3.5,16.6), Point(-1.4,20.2), Point(1.2,20), Point(4,19.6), Point(-1.2,23.3), Point(1.8,23), Point(4.3,22.5)]
         move = 0
-        
-        for i in range(0,9):
-            self.wri.goto_point(sensorPoints[i].x,sensorPoints[i].y)
-            print ('Color value for square ' + str(i+1) + ' is ' + str(self.wri.color.value()))
-            if (self.wri.color.value() < 60):
+        print (self.theBoard)
+        for i in self.emptySpaces(self.theBoard):
+            self.wri.goto_point(sensorPoints[i-1].x,sensorPoints[i-1].y)
+            print ('Color value for square ' + str(i) + ' is ' + str(self.wri.color.value()))
+            if (self.wri.color.value() < 80):
+                return i
                 
         # while True:
 #             print ('coord')
@@ -637,7 +615,8 @@ class TicTacToe():
         # print (line1Start)
         # path = [0, line1Start, 1, line1End, 0, line2Start, 1, line2End, 0]
         self.wri.follow_path(line1.wriPath()+line2.wriPath())
-    
+        self.wri.pen_up()
+        
     def speak(self, sentence):
         self.wri.speak(sentence)
 
@@ -718,7 +697,7 @@ def main(argv):
                 ttt.speak ('The computer moves on square ' + str(move))
                 ttt.drawComputerMove(move)
                 if ttt.isWinner(ttt.theBoard, ttt.computerLetter):
-                    print('The computer has beaten you! You lose.')
+                    ttt.speak('The computer has beaten you! You lose.')
                     gameIsPlaying = False
                 else:
                     if ttt.isBoardFull():

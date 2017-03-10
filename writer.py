@@ -700,4 +700,23 @@ def main(argv):
                     ttt.speak('The robot has beaten you! You lose.')
                     gameIsPlaying = False
                 else:
-                    if ttt.isBoardFu
+                        print('The game is a tie!')
+                        break
+                    else:
+                        turn = 'player'
+        
+        if ttt.playAgain():
+            ttt = TicTacToe('O')
+            ttt.drawBoard()
+        else:
+            break
+    
+    
+    #path = [0,(-4,18),1,(-4,23),0,(0,18),1,(0,23),0,(2,18),1,(2,23)]
+    #wri.follow_path (path, max_speed=35)
+    #wri.draw_image(image_file = 'images/test.svg',max_speed=35)
+    #wri.follow_mouse()
+   
+
+if __name__ == '__main__':
+    main(sys.argv[1:])

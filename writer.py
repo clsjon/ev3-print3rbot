@@ -517,18 +517,13 @@ class TicTacToe():
             
     
     def getPlayerMove(self):
-        sensorPoints = [Point(-2.7,15.6), Point(1,17), Point(3.5,16.6), Point(-1.4,20.2), Point(1.2,20), Point(4,19.6), Point(-1.2,23.3), Point(1.8,23), Point(4.3,22.5)]
-
-        #Move out of the way to allow player entry
-        self.wri.goto_point(4,14)
-        time.sleep(3)
-        #
-
+        sensorPoints = [0,Point(-2.7,15.6), Point(1,17), Point(3.5,16.6), Point(-1.4,20.2), Point(1.2,20), Point(4,19.6), Point(-1.2,23.3), Point(1.8,23), Point(4.3,22.5)]
+        move = 0
         print (self.theBoard)
         for i in self.emptySpaces(self.theBoard):
-            self.wri.goto_point(sensorPoints[i-1].x,sensorPoints[i-1].y)
+            self.wri.goto_point(sensorPoints[i].x,sensorPoints[i].y)
             print ('Color value for square ' + str(i) + ' is ' + str(self.wri.color.value()))
-            if (self.wri.color.value() < 80):
+            if (self.wri.color.value() < 80): #80 is the threshold to determine that the user drew a move in the square
                 return i
                 
         # while True:
@@ -702,24 +697,7 @@ def main(argv):
                 ttt.speak ('The computer moves on square ' + str(move))
                 ttt.drawComputerMove(move)
                 if ttt.isWinner(ttt.theBoard, ttt.computerLetter):
-                    ttt.speak('The computer has beaten you! You lose.')
+                    ttt.speak('The robot has beaten you! You lose.')
                     gameIsPlaying = False
                 else:
-                    if ttt.isBoardFull():
-                        print('The game is a tie!')
-                        break
-                    else:
-                        turn = 'player'
-        
-        if ttt.playAgain():
-            ttt = TicTacToe(inputPlayerLetter())
-        else:
-            break
-    
-    
-
-
-
-
-if __name__ == '__main__':
-    main(sys.argv[1:])
+                    if ttt.isBoardFu

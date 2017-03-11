@@ -700,6 +700,7 @@ def main(argv):
                     ttt.speak('The robot has beaten you! You lose.')
                     gameIsPlaying = False
                 else:
+                    if  ttt.isBoardFull():
                         print('The game is a tie!')
                         break
                     else:

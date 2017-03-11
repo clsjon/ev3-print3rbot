@@ -478,9 +478,10 @@ class TicTacToe():
     
     def playAgain(self):
         # This function returns True if the player wants to play again, otherwise it returns False.
-        print('Do you want to play again? (yes or no)')
-        return input().lower().startswith('y')
-    
+        return False
+        # print('Do you want to play again? (yes or no)')
+#         return input().lower().startswith('y')
+#
     def makeMove(self, board, letter, move):
         board[move] = letter
         
@@ -519,17 +520,27 @@ class TicTacToe():
     def getPlayerMove(self):
         sensorPoints = [0,Point(-2.7,15.6), Point(1,17), Point(3.5,16.6), Point(-1.4,20.2), Point(1.2,20), Point(4,19.6), Point(-1.2,23.3), Point(1.8,23), Point(4.3,22.5)]
         
+        playerMove = 0
         #move out of the way to allow player to move
-        self.speak("Please make your move")
-        self.wri.goto_point(4,14)
-        time.sleep(3)
-        print (self.theBoard)
-        for i in self.emptySpaces(self.theBoard):
-            self.wri.goto_point(sensorPoints[i].x,sensorPoints[i].y)
-            print ('Color value for square ' + str(i) + ' is ' + str(self.wri.color.value()))
-            if (self.wri.color.value() < 80): #80 is the threshold to determine that the user drew a move in the square
-                return i
-                
+        while playerMove == 0:
+            self.wri.goto_point(4,14)
+            time.sleep(3)
+        
+            for i in self.emptySpaces(self.theBoard):
+                self.wri.goto_point(sensorPoints[i].x,sensorPoints[i].y)
+                print ('Color value for square ' + str(i) + ' is ' + str(self.wri.color.value()))
+                #lower threshold for square 1 because sensor is higher
+                if i==1:
+                    threshold = 65
+                else:
+                    threshold = 80
+            
+                if (self.wri.color.value() < threshold): #80 is the threshold to determine that the user drew a move in the square
+                    playerMove = i
+                    break
+            
+        
+        return playerMove
         # while True:
 #             print ('coord')
 #             coord = input()
@@ -676,7 +687,7 @@ def main(argv):
     
     while True:
         # Reset the board
-        turn = 'player' #ttt.whoGoesFirst()
+        turn = ttt.whoGoesFirst()
         #ttt.speak('The ' + turn + ' will go first.')
         gameIsPlaying = True
         
@@ -708,7 +719,7 @@ def main(argv):
                     gameIsPlaying = False
                 else:
                     if  ttt.isBoardFull():
-                        print('The game is a tie!')
+                        ttt.speak('The game is a tie!')
                         break
                     else:
                         turn = 'player'
@@ -717,6 +728,7 @@ def main(argv):
             ttt = TicTacToe('O')
             ttt.drawBoard()
         else:
+            ttt.wri.calibrate()
             break
     
     

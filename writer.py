@@ -518,7 +518,11 @@ class TicTacToe():
     
     def getPlayerMove(self):
         sensorPoints = [0,Point(-2.7,15.6), Point(1,17), Point(3.5,16.6), Point(-1.4,20.2), Point(1.2,20), Point(4,19.6), Point(-1.2,23.3), Point(1.8,23), Point(4.3,22.5)]
-        move = 0
+        
+        #move out of the way to allow player to move
+        self.speak("Please make your move")
+        self.wri.goto_point(4,14)
+        time.sleep(3)
         print (self.theBoard)
         for i in self.emptySpaces(self.theBoard):
             self.wri.goto_point(sensorPoints[i].x,sensorPoints[i].y)
@@ -666,6 +670,8 @@ def inputPlayerLetter():
 
 def main(argv):
     ttt = TicTacToe('O')
+    ttt.speak("Welcome to Robot Tic Tac Toe! Please wait while I get our board set up")
+    
     ttt.drawBoard()
     
     while True:
@@ -677,6 +683,7 @@ def main(argv):
         while gameIsPlaying:
             if turn == 'player':
                 # Player's turn.
+                ttt.speak('Please make your move')
                 move = ttt.getPlayerMove()
                 ttt.makeMove(ttt.theBoard, ttt.playerLetter, move)
                 
@@ -694,10 +701,10 @@ def main(argv):
                 # Computer's turn.
                 move = ttt.getComputerMove()
                 ttt.makeMove(ttt.theBoard, ttt.computerLetter, move)
-                ttt.speak ('The computer moves on square ' + str(move))
+                ttt.speak ('I will move on square ' + str(move))
                 ttt.drawComputerMove(move)
                 if ttt.isWinner(ttt.theBoard, ttt.computerLetter):
-                    ttt.speak('The robot has beaten you! You lose.')
+                    ttt.speak('I\'ve beaten you you silly banana!')
                     gameIsPlaying = False
                 else:
                     if  ttt.isBoardFull():
